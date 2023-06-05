@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <input type="text" id="username" placeholder="Username">
+    <br>
+    <textarea id="message" placeholder="Message" cols="30" rows="10"></textarea>
+    <br>
+    <button onclick="sendMessage()">Send</button>
+    <div id="chat"></div>
+
+    <script>
+        let socket = new WebSocket("ws://localhost:8000/ws");
+        let chat = document.getElementById("chat")
+
+        socket.onmessage = function(event) {
+            let message = JSON.parse(event.data);
+            chat.innerHTML += "<p><strong>" + message.username + ": </strong>" + message.content + "</p>";
+        }
+
+        function sendMessage() {
+            let username = document.getElementById("username").value;
+            let content = document.getElementById("message").value;
+            let message = {
+                username,
+                content,
+            };
+            socket.send(JSON.stringify(message));
+            document.getElementById("message").value = "";
+        }
+    </script>
+</body>
+</html>
